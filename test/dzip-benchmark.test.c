@@ -6,14 +6,18 @@
 #include <assert.h>
 #include <sys/time.h>
 #include <string.h>
+#include <unistd.h>
 #define FLAT_INCLUDES
-#include "../../array/range.h"
+#include "../../range/def.h"
 #include "../../window/def.h"
 #include "../../window/alloc.h"
-#include "../../convert/def.h"
-#include "../../convert/fd.h"
-#include "../deflate/deflate.h"
-#include "../common/common.h"
+#include "../../convert/source.h"
+#include "../../convert/sink.h"
+#include "../../convert/fd/source.h"
+#include "../../convert/fd/sink.h"
+#include "../../convert/duplex.h"
+#include "../deflate.h"
+//#include "../common/common.h"
 #include "../../log/log.h"
 
 typedef unsigned long long usec;
@@ -34,49 +38,63 @@ usec get_delta()
 
 void sliced()
 {
-    window_unsigned_char output = {0};
-    window_unsigned_char input = {0};
+    window_unsigned_char source_contents = {0};
+    fd_source fd_source = fd_source_init(STDIN_FILENO, &source_contents);
 
-    dzip_deflate_state * state = dzip_deflate_state_new();
+    window_unsigned_char sink_contents = {0};
+    fd_sink fd_sink = fd_sink_init(STDOUT_FILENO, &sink_contents.region.const_cast);
 
-    dzip_size total_input_size = 0;
-    dzip_size total_output_size = 0;
+    dzip_deflate_state state = {0};
+
+    size_t total_input_size = 0;
+    size_t total_output_size = 0;
     
     assert (state);
+
+    window_alloc(source_contents, 1e6);
 
     start_time();
 
     bool error = false;
 
-    window_alloc (input, 1e6);
 
-    convert_interface_fd read = convert_interface_fd_init(STDIN_FILENO);
-
-    while (convert_fill(&error, &input, &read.interface))
+    while (convert_fill_alloc(&error, &fd_source.source))
     {
-//	log_debug ("read %zu", range_count(input.region));
-	dzip_deflate(&output, state, &input.region.const_cast);
+	//log_debug ("read %zu", range_count(source_contents.region));
+		
+	total_input_size += range_count(source_contents.region);
 	
-	total_input_size += range_count(input.region);
-	total_output_size += range_count (output.region);
-	
-	window_rewrite (output);
-	window_rewrite (input);
+	dzip_deflate_mem(&sink_contents, &state, &source_contents.region.const_cast);
+        
+	total_output_size += range_count (sink_contents.region);
+
+	if (!convert_drain (&error, &fd_sink.sink))
+	{
+	    log_fatal ("Failed to write to output");
+	}
+
+	assert (range_is_empty(source_contents.region));
+	assert (range_is_empty(sink_contents.region));
     }
 
     assert (!error);
     
     //dzip_deflate(.state = state, .output = &output);
 
-    usec compress_time = get_delta();
-    double compress_seconds = (double)compress_time / (double) 1e6;
+    //usec compress_time = get_delta();
+    //double compress_seconds = (double)compress_time / (double) 1e6;
     
-    printf("size ratio result/input = %d / %d =  %lf\n", (int)total_output_size, (int)total_input_size, (double) total_output_size / (double) total_input_size);
-    printf("internal time: %lf seconds\n", compress_seconds);
-    printf("compress megabytes per second: %lf\n", (double) total_input_size / (compress_seconds * 1e6));
+    //log_debug ("size ratio result/input = %d / %d =  %lf\n", (int)total_output_size, (int)total_input_size, (double) total_output_size / (double) total_input_size);
+    //log_debug ("internal time: %lf seconds\n", compress_seconds);
+    //log_debug ("compress megabytes per second: %lf\n", (double) total_input_size / (compress_seconds * 1e6));
 
-    free (output.alloc.begin);
-    free (input.alloc.begin);
+    window_clear (source_contents);
+    window_clear (sink_contents);
+
+    return;
+
+fail:
+    exit(1);
 }
 
 int main()
@@ -85,7 +103,7 @@ int main()
     //full();
     
 //#ifndef NDEBUG
-    dzip_print_stats();
+    //dzip_print_stats();
 //#endif
     return 0;
 }

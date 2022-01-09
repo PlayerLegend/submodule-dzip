@@ -1,27 +1,47 @@
-C_PROGRAMS += bin/dzip bin/dzip-benchmark
-SH_PROGRAMS += test/dzip-verify bin/benchmark-compression-utils
+bin/dzip-benchmark: \
+	src/dzip/test/dzip-benchmark.test.o \
+	src/dzip/deflate.o \
+	src/convert/source.o \
+	src/convert/fd/source.o \
+	src/window/printf_append.o \
+	src/vluint/vluint.o \
+	src/window/alloc.o \
+	src/log/log.o \
+	src/window/vprintf_append.o \
+	src/convert/sink.o \
+	src/convert/fd/sink.o \
+	src/convert/duplex.o
+
+bin/dzip: \
+	src/dzip/dzip.util.o \
+	src/dzip/deflate.o \
+	src/dzip/inflate.o \
+	src/dzip/source.o \
+	src/dzip/sink.o \
+	src/convert/source.o \
+	src/convert/sink.o \
+	src/convert/fd/source.o \
+	src/convert/fd/sink.o \
+	src/log/log.o \
+	src/convert/duplex.o \
+	src/vluint/vluint.o \
+	src/vluint/source.o \
+	src/window/alloc.o \
+	src/window/printf_append.o \
+	src/window/vprintf_append.o
+
+C_PROGRAMS += bin/dzip
+C_PROGRAMS += bin/dzip-benchmark
+SH_PROGRAMS += test/dzip-verify
+SH_PROGRAMS += bin/benchmark-compression-utils
 RUN_TESTS += test/dzip-verify
 
-dzip-tests: test/dzip-verify bin/dzip-benchmark
-dzip-utils: bin/benchmark-compression-utils bin/dzip
+dzip-tests: test/dzip-verify
+dzip-tests: bin/dzip-benchmark
+dzip-utils: bin/benchmark-compression-utils
+dzip-utils: bin/dzip
 
 bin/benchmark-compression-utils: src/dzip/test/compression-benchmarks.sh
-bin/dzip-benchmark: src/window/alloc.o
-bin/dzip-benchmark: src/dzip/deflate/deflate.o
-bin/dzip-benchmark: src/dzip/test/dzip-benchmark.test.o
-bin/dzip-benchmark: src/log/log.o
-bin/dzip-benchmark: src/vluint/vluint.o
-bin/dzip-benchmark: src/convert/fd.o
-bin/dzip-benchmark: src/convert/def.o
-bin/dzip: src/dzip/deflate/deflate.o
-bin/dzip: src/dzip/inflate/inflate.o
-bin/dzip: src/dzip/util/dzip.util.o
-bin/dzip: src/log/log.o
-bin/dzip: src/vluint/vluint.o
-bin/dzip: src/convert/def.o
-bin/dzip: src/convert/fd-bifurcated.o
-bin/dzip: src/window/alloc.o
-bin/dzip: src/dzip/convert/dzip.o
 test/dzip-verify: src/dzip/test/dzip-verify.test.sh
 
 tests: dzip-tests
