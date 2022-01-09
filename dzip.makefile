@@ -45,4 +45,3 @@ bin/benchmark-compression-utils: src/dzip/test/compression-benchmarks.sh
 test/dzip-verify: src/dzip/test/dzip-verify.test.sh
 
 tests: dzip-tests
-utils: dzip-utils
