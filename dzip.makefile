@@ -10,7 +10,7 @@ bin/dzip-benchmark: \
 	src/window/vprintf_append.o \
 	src/convert/sink.o \
 	src/convert/fd/sink.o \
-	src/convert/duplex.o
+	src/convert/join.o
 
 bin/dzip: \
 	src/dzip/dzip.util.o \
@@ -23,7 +23,7 @@ bin/dzip: \
 	src/convert/fd/source.o \
 	src/convert/fd/sink.o \
 	src/log/log.o \
-	src/convert/duplex.o \
+	src/convert/join.o \
 	src/vluint/vluint.o \
 	src/vluint/source.o \
 	src/window/alloc.o \

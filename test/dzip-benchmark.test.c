@@ -15,9 +15,7 @@
 #include "../../convert/sink.h"
 #include "../../convert/fd/source.h"
 #include "../../convert/fd/sink.h"
-#include "../../convert/duplex.h"
 #include "../deflate.h"
-//#include "../common/common.h"
 #include "../../log/log.h"
 
 typedef unsigned long long usec;

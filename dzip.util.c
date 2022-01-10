@@ -13,7 +13,7 @@
 #include "../convert/fd/source.h"
 #include "../convert/sink.h"
 #include "../convert/fd/sink.h"
-#include "../convert/duplex.h"
+#include "../convert/join.h"
 #include "deflate.h"
 #include "inflate.h"
 #include "source.h"
