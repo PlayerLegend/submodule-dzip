@@ -1,16 +1,16 @@
 # dzip
 
-This is a submodule providing dzip inflate and deflate functionality, as well as compatibility with convert streams defined in the submodule ../submodule-convert/
+This is a submodule providing dzip inflate and deflate functionality, as well as compatibility with convert streams defined in the [convert submodule](../submodule-convert/)
 
 # Dependencies
 
 The C standard library
-sys/time.h
-submodule-range
-submodule-window
-submodule-convert
-submodule-vluint
-submodule-log
+sys/time.h  
+[submodule-range](submodule-range)  
+[submodule-window](submodule-window)  
+[submodule-convert](submodule-convert)  
+[submodule-vluint](submodule-vluint)  
+[submodule-log](submodule-log)
 
 # Description
 
