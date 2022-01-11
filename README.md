@@ -4,7 +4,7 @@ This is a submodule providing dzip inflate and deflate functionality, as well as
 
 # Dependencies
 
-The C standard library
+The C standard library  
 sys/time.h  
 [submodule-range](https://github.com/PlayerLegend/submodule-range/)  
 [submodule-window](https://github.com/PlayerLegend/submodule-window/)  
