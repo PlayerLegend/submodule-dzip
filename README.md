@@ -1,16 +1,16 @@
 # dzip
 
-This is a submodule providing dzip inflate and deflate functionality, as well as compatibility with convert streams defined in the [convert submodule](../submodule-convert/)
+This is a submodule providing dzip inflate and deflate functionality, as well as compatibility with convert streams defined in the [convert submodule](https://github.com/PlayerLegend/submodule-convert/)
 
 # Dependencies
 
 The C standard library
 sys/time.h  
-[submodule-range](submodule-range)  
-[submodule-window](submodule-window)  
-[submodule-convert](submodule-convert)  
-[submodule-vluint](submodule-vluint)  
-[submodule-log](submodule-log)
+[submodule-range](https://github.com/PlayerLegend/submodule-range/)  
+[submodule-window](https://github.com/PlayerLegend/submodule-window/)  
+[submodule-convert](https://github.com/PlayerLegend/submodule-convert/)  
+[submodule-vluint](https://github.com/PlayerLegend/submodule-vluint/)  
+[submodule-log](https://github.com/PlayerLegend/submodule-log/)
 
 # Description
 
