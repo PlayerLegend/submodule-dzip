@@ -29,26 +29,28 @@ inline static bool find_match (deflate_match * match, dzip_deflate_state * state
     assert ((size_t)range_count(*input) >= sizeof(dzip_deflate_index));
     
     dzip_deflate_offset * index_p = get_state_index (state, *(dzip_deflate_index*) input->begin);
-    match->offset = *index_p;
 
-    size_t input_size = range_count(*input);
+    size_t chunk_size = input->begin - input_start;
 
-    if (input_start + match->offset < input->begin)
+    assert (chunk_size > 0);
+
+    size_t index_mod = (*index_p) % chunk_size;
+
+    match->offset = chunk_size - index_mod;
+    
+    const unsigned char * input_i;
+
+    for_range (input_i, *input)
     {
-	for (match->size = 0; match->size < input_size; match->size++)
+	if (*input_i != *(input_i - match->offset))
 	{
-	    if (input_start[match->offset + match->size] != input->begin[match->size])
-	    {
-		break;
-	    }
+	    break;
 	}
     }
-    else
-    {
-	match->size = 0;
-    }
 
-    *index_p = input->begin - input_start;
+    match->size = range_index(input_i, *input);
+    
+    *index_p = chunk_size;
 
     return match->size > 4;
 }
@@ -59,7 +61,7 @@ inline static void write_match (window_unsigned_char * output, const deflate_mat
 
     assert (size);
 
-    vluint_write(output, 1 | (size << 1));
+    vluint_write(output, 1 | (size << 2));
     vluint_write(output, match->offset);
 }
 
@@ -72,7 +74,7 @@ inline static void write_literal (window_unsigned_char * output, const unsigned 
 	return;
     }
 
-    vluint_write (output, 0 | (size << 1));
+    vluint_write (output, 0 | (size << 2));
     
     window_append_bytes(output, *literal_begin, size);
     *literal_begin = input->begin;
@@ -89,6 +91,8 @@ void dzip_deflate_chunk (window_unsigned_char * output, dzip_deflate_state * sta
     const unsigned char * literal_begin = input->begin;
 
     deflate_match match;
+
+    input->begin++;
 
     while (range_count(*input) > (long long int)sizeof(dzip_deflate_index))
     {

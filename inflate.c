@@ -84,7 +84,12 @@ read_arg1:
 
     is_match = size & 1;
 
-    size >>= 1;
+    if (size & 2)
+    {
+	log_fatal ("Extend bit is set, but this dzip version does not understand that");
+    }
+
+    size >>= 2;
 
     window_grow_bytes(output, size);
     dest = output->region.end - size;
@@ -99,11 +104,16 @@ read_arg1:
     }
 
 match:
-    src = output->region.begin + chunk_start + vluint_read_source (error, source, VLUINT_SOURCE_LIMIT);
+    src = output->region.end - size - vluint_read_source (error, source, VLUINT_SOURCE_LIMIT);
 
     if (*error)
     {
 	log_fatal ("Failed to read dzip match offset");
+    }
+
+    if (src < output->region.begin || src >= output->region.end)
+    {
+	log_fatal ("Match offset out of bounds %zu/%zu", output->region.end - src, range_count(output->region));
     }
 
     goto copy;
@@ -113,6 +123,11 @@ literal:
     {
 	assert (!*error);
 	log_fatal ("Failed to read literal contents");
+    }
+
+    if ((long long int)size > range_count(*input))
+    {
+	log_fatal ("Literal size out of bounds");
     }
     
     src = input->begin;
@@ -126,7 +141,7 @@ copy:
     {
 	dest[i] = src[i];
     }
-    
+
     goto read_arg1;
 
 fail:

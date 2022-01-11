@@ -34,6 +34,7 @@ do
     echo "$util:"
     dd bs=1G if="$input_file" 2>/dev/null | "$util" | dd bs=1G of="$output_file"
     echo "ratio: $(echo "$(du -s "$output_file" | cut -f1) / $(du -s "$input_file" | cut -f1)" | bc -l)"
+    dd bs=1G if="$output_file" 2>/dev/null | "$util" -d | dd bs=1G > /dev/null
     #echo "$util:"
     #size="$(cat "$input" | time "$util" 2> "$timer_output" | wc -c)"
     #echo "output/input ratio: $size/$size_base = `echo "$size/$size_base" | bc -l`"

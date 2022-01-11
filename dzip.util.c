@@ -20,6 +20,18 @@
 #include "sink.h"
 #include "../log/log.h"
 
+void print_help (const char * program_name)
+{
+    log_stderr("usage %s [options]", program_name);
+    log_stderr("");
+    log_stderr("This program reads from stdin and writes from stdout. With no options, it will compress its input.");
+    log_stderr("");
+    log_stderr("Optional command line flags:");
+    log_stderr("\t-d: decompress input");
+
+    log_stderr("");
+}
+
 int main(int argc, char * argv[])
 {
     bool decompress_flag = false;
@@ -27,17 +39,23 @@ int main(int argc, char * argv[])
     struct option long_options[] = 
 	{
 	    { "decompress", no_argument, NULL, 'd' },
+	    { "help", no_argument, NULL, 'h' },
 	};
 
     int c;
     int option_index;
 
-    while (0 <= (c = getopt_long (argc, argv, "d", long_options, &option_index)))
+    while (0 <= (c = getopt_long (argc, argv, "dh", long_options, &option_index)))
     {
 	switch(c)
 	{
 	case 'd':
 	    decompress_flag = true;
+	    break;
+
+	case 'h':
+	    print_help(argv[0]);
+	    return 0;
 	}
     }
 
