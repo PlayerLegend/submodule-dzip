@@ -3,7 +3,7 @@
 set -e
 
 tmp="$(mktemp)"
-dd if=/dev/random of="$tmp" bs=1M count=100 2>/dev/null
+dd if=/dev/urandom of="$tmp" bs=1M count=100 2>/dev/null
 tar -c --to-stdout src >> "$tmp"
 
 if ! cat "$tmp" | bin/dzip | bin/dzip -d | cmp "$tmp"
