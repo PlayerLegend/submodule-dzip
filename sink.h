@@ -1,9 +1,4 @@
 #ifndef FLAT_INCLUDES
-#include <stddef.h>
-#include <stdbool.h>
-#define FLAT_INCLUDES
-#include "../range/def.h"
-#include "../window/def.h"
 #include "../convert/sink.h"
 #endif
 

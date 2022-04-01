@@ -1,36 +1,30 @@
-#include <stddef.h>
-#include <stdbool.h>
 #include <stdint.h>
-#include <assert.h>
-#define FLAT_INCLUDES
-#include "../range/def.h"
-#include "../window/def.h"
-#include "../convert/source.h"
-#include "../window/alloc.h"
-#include "inflate.h"
-#include "common.h"
-#include "../log/log.h"
-#include "../vluint/vluint.h"
 #include "../vluint/source.h"
+#include "inflate.h"
+#include "../log/log.h"
+#include "common.h"
+#include <assert.h>
+#include "../window/alloc.h"
 
 #define VLUINT_SOURCE_LIMIT 16
 
-bool dzip_inflate_chunk (bool * error, window_unsigned_char * output, convert_source * source)
+status dzip_inflate_chunk (window_unsigned_char * output, convert_source * source)
 {
     size_t chunk_start = range_count(output->region);
 
     range_const_unsigned_char * input = &source->contents->region.const_cast;
-
-    if (!convert_fill_minimum (error, source, sizeof(DZIP_MAGIC_INT)))
+    
+    switch (convert_fill_minimum (source, sizeof(DZIP_MAGIC_INT)))
     {
-	if (*error)
-	{
-	    log_fatal ("dzip chunk is missing magic number");
-	}
-	else
-	{
-	    return false;
-	}
+    default:
+    case STATUS_ERROR:
+	log_fatal ("dzip chunk is missing magic number");
+
+    case STATUS_END:
+	return STATUS_END;
+
+    case STATUS_UPDATE:
+	break;
     }
 
     if (DZIP_MAGIC_CAST(input->begin) != DZIP_MAGIC_INT)
@@ -40,9 +34,9 @@ bool dzip_inflate_chunk (bool * error, window_unsigned_char * output, convert_so
 
     input->begin += sizeof(DZIP_MAGIC_INT);
 
-    unsigned long long dzip_version = vluint_read_source(error, source, VLUINT_SOURCE_LIMIT);
+    vluint_result dzip_version;
 
-    if (*error)
+    if (!vluint_read_source (&dzip_version, source, VLUINT_SOURCE_LIMIT))
     {
 	log_fatal ("could not read dzip chunk version");
     }
@@ -52,9 +46,8 @@ bool dzip_inflate_chunk (bool * error, window_unsigned_char * output, convert_so
 	log_fatal ("Bad dzip version in chunk");
     }
 
-    unsigned long long output_size = vluint_read_source(error, source, VLUINT_SOURCE_LIMIT);
-
-    if (*error)
+    vluint_result output_size;
+    if (!vluint_read_source (&output_size, source, VLUINT_SOURCE_LIMIT))
     {
 	log_fatal ("could not read dzip chunk output size");
     }
@@ -63,25 +56,25 @@ bool dzip_inflate_chunk (bool * error, window_unsigned_char * output, convert_so
 
     bool is_match;
     
-    unsigned long long size;
+    vluint_result size;
+    vluint_result match_offset;
     const unsigned char * src;
     unsigned char * dest;
 
     size_t i;
 
 read_arg1:
+    
     if (range_count (output->region) - chunk_start == output_size)
     {
-	return true;
+	return output_size ? STATUS_UPDATE : STATUS_END;
     }
-    
-    size = vluint_read_source (error, source, VLUINT_SOURCE_LIMIT);
 
-    if (*error)
+    if (!vluint_read_source (&size, source, VLUINT_SOURCE_LIMIT))
     {
 	log_fatal ("Failed to read dzip chunk arg1");
     }
-
+    
     is_match = size & 1;
 
     if (size & 2)
@@ -104,12 +97,13 @@ read_arg1:
     }
 
 match:
-    src = output->region.end - size - vluint_read_source (error, source, VLUINT_SOURCE_LIMIT);
-
-    if (*error)
+    
+    if (!vluint_read_source (&match_offset, source, VLUINT_SOURCE_LIMIT))
     {
 	log_fatal ("Failed to read dzip match offset");
     }
+    
+    src = output->region.end - size - match_offset;
 
     if (src < output->region.begin || src >= output->region.end)
     {
@@ -119,9 +113,9 @@ match:
     goto copy;
 
 literal:
-    if (!convert_fill_minimum(error, source, size))
+    
+    if (STATUS_ERROR == convert_fill_minimum(source, size))
     {
-	assert (!*error);
 	log_fatal ("Failed to read literal contents");
     }
 
@@ -146,15 +140,16 @@ copy:
 
 fail:
     log_debug("inflate fail");
-    *error = true;
-    return false;
+    return STATUS_ERROR;
 }
 
-bool dzip_inflate_all (bool * error, window_unsigned_char * output, convert_source * source)
+status dzip_inflate_all (window_unsigned_char * output, convert_source * source)
 {
-    while (dzip_inflate_chunk (error, output, source))
+    status status = STATUS_UPDATE;
+    
+    while (STATUS_UPDATE == (status = dzip_inflate_chunk (output, source)))
     {
     }
     
-    return !*error;
+    return status;
 }

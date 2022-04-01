@@ -1,4 +1,4 @@
-#include <stdbool.h>
+/*#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <getopt.h>
@@ -13,12 +13,21 @@
 #include "../convert/fd/source.h"
 #include "../convert/sink.h"
 #include "../convert/fd/sink.h"
+#include "../convert/join.h"*/
+
+#include <getopt.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <assert.h>
+
 #include "../convert/join.h"
-#include "deflate.h"
-#include "inflate.h"
 #include "source.h"
+#include "inflate.h"
 #include "sink.h"
 #include "../log/log.h"
+#include "../convert/fd/source.h"
+#include "../convert/fd/sink.h"
+#include "../window/alloc.h"
 
 void print_help (const char * program_name)
 {

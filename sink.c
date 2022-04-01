@@ -1,16 +1,11 @@
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <assert.h>
-#include <stdlib.h>
-#define FLAT_INCLUDES
-#include "../range/def.h"
-#include "../window/def.h"
-#include "../window/alloc.h"
+#include "../convert/source.h"
 #include "../convert/sink.h"
-#include "sink.h"
+#include <stdint.h>
 #include "deflate.h"
 #include "../log/log.h"
+#include <assert.h>
+#include "../window/alloc.h"
+#include <stdlib.h>
 
 typedef struct {
     convert_sink sink;
@@ -20,13 +15,14 @@ typedef struct {
 }
     dzip_deflate_sink;
 
-static bool update_callback(bool * error, convert_sink * target)
+static status update_callback(convert_sink * target)
 {
     dzip_deflate_sink * deflate_sink = (dzip_deflate_sink*) target;
+
     dzip_deflate_mem(&deflate_sink->next_contents, &deflate_sink->state, target->contents);
     deflate_sink->next->contents = &deflate_sink->next_contents.region.const_cast;
 
-    return convert_drain(error, deflate_sink->next);
+    return convert_drain(deflate_sink->next);
 }
 
 static void clear_callback(convert_sink * target)

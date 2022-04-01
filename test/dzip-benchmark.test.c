@@ -1,4 +1,4 @@
-#include <stdint.h>
+/*#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -16,7 +16,19 @@
 #include "../../convert/fd/source.h"
 #include "../../convert/fd/sink.h"
 #include "../deflate.h"
+#include "../../log/log.h"*/
+#include "../deflate.h"
+#include <sys/time.h>
+#include "../../convert/status.h"
+#include "../../convert/source.h"
+#include "../../convert/sink.h"
+#include "../../convert/fd/source.h"
+#include "../../convert/fd/sink.h"
+#include <unistd.h>
+#include <assert.h>
+#include "../../window/alloc.h"
 #include "../../log/log.h"
+#include <stdlib.h>
 
 typedef unsigned long long usec;
 
@@ -53,10 +65,9 @@ void sliced()
 
     start_time();
 
-    bool error = false;
+    status status = STATUS_UPDATE;
 
-
-    while (convert_fill_alloc(&error, &fd_source.source))
+    while ( (status = convert_fill_alloc(&fd_source.source)) != STATUS_ERROR && !range_is_empty(source_contents.region) )
     {
 	//log_debug ("read %zu", range_count(source_contents.region));
 		
@@ -66,7 +77,7 @@ void sliced()
         
 	total_output_size += range_count (sink_contents.region);
 
-	if (!convert_drain (&error, &fd_sink.sink))
+	if (STATUS_UPDATE != convert_drain (&fd_sink.sink))
 	{
 	    log_fatal ("Failed to write to output");
 	}
@@ -75,7 +86,7 @@ void sliced()
 	assert (range_is_empty(sink_contents.region));
     }
 
-    assert (!error);
+    assert (status != STATUS_ERROR);
     
     //dzip_deflate(.state = state, .output = &output);
 
