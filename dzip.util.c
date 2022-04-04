@@ -1,20 +1,3 @@
-/*#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <getopt.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <assert.h>
-#define FLAT_INCLUDES
-#include "../range/def.h"
-#include "../window/def.h"
-#include "../window/alloc.h"
-#include "../convert/source.h"
-#include "../convert/fd/source.h"
-#include "../convert/sink.h"
-#include "../convert/fd/sink.h"
-#include "../convert/join.h"*/
-
 #include <getopt.h>
 #include <stdlib.h>
 #include <unistd.h>
