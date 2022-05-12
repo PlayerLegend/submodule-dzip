@@ -12,7 +12,7 @@ status dzip_inflate_chunk (window_unsigned_char * output, convert_source * sourc
 {
     size_t chunk_start = range_count(output->region);
 
-    range_const_unsigned_char * input = &source->contents->region.const_cast;
+    range_const_unsigned_char * input = &source->contents->region.alias_const;
     
     switch (convert_fill_minimum (source, sizeof(DZIP_MAGIC_INT)))
     {

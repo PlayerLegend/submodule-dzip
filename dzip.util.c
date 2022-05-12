@@ -64,7 +64,7 @@ int main(int argc, char * argv[])
 	    window_unsigned_char inflate_contents = {0};
 	    dzip_inflate_source inflate_source = dzip_inflate_source_init(&fd_source.source, &inflate_contents);
 	    {
-		fd_sink fd_sink = fd_sink_init(STDOUT_FILENO, &inflate_contents.region.const_cast);
+		fd_sink fd_sink = fd_sink_init(STDOUT_FILENO, &inflate_contents.region.alias_const);
 		if (!convert_join (&fd_sink.sink, &inflate_source.source))
 		{
 		    log_fatal ("Failed to join input to output");
@@ -82,7 +82,7 @@ int main(int argc, char * argv[])
 	fd_source fd_source = fd_source_init(STDIN_FILENO, &fd_contents);
 	{
 	    fd_sink fd_sink = fd_sink_init(STDOUT_FILENO, NULL);
-	    convert_sink * sink = dzip_deflate_sink_new(&fd_sink.sink, &fd_contents.region.const_cast);
+	    convert_sink * sink = dzip_deflate_sink_new(&fd_sink.sink, &fd_contents.region.alias_const);
 	    
 	    if (!convert_join (sink, &fd_source.source))
 	    {

@@ -20,7 +20,7 @@ static status update_callback(convert_sink * target)
     dzip_deflate_sink * deflate_sink = (dzip_deflate_sink*) target;
 
     dzip_deflate_mem(&deflate_sink->next_contents, &deflate_sink->state, target->contents);
-    deflate_sink->next->contents = &deflate_sink->next_contents.region.const_cast;
+    deflate_sink->next->contents = &deflate_sink->next_contents.region.alias_const;
 
     return convert_drain(deflate_sink->next);
 }

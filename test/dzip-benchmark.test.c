@@ -33,7 +33,7 @@ void sliced()
     fd_source fd_source = fd_source_init(STDIN_FILENO, &source_contents);
 
     window_unsigned_char sink_contents = {0};
-    fd_sink fd_sink = fd_sink_init(STDOUT_FILENO, &sink_contents.region.const_cast);
+    fd_sink fd_sink = fd_sink_init(STDOUT_FILENO, &sink_contents.region.alias_const);
 
     dzip_deflate_state state = {0};
 
@@ -54,7 +54,7 @@ void sliced()
 		
 	total_input_size += range_count(source_contents.region);
 	
-	dzip_deflate_mem(&sink_contents, &state, &source_contents.region.const_cast);
+	dzip_deflate_mem(&sink_contents, &state, &source_contents.region.alias_const);
         
 	total_output_size += range_count (sink_contents.region);
 
