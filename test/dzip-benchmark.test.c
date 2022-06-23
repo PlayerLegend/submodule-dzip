@@ -1,6 +1,6 @@
 #include "../deflate.h"
 #include <sys/time.h>
-#include "../../convert/status.h"
+#include "../../convert/type.h"
 #include "../../convert/source.h"
 #include "../../convert/sink.h"
 #include "../../convert/fd/source.h"

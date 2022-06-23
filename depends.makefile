@@ -11,7 +11,7 @@ src/dzip/dzip.util.o: src/convert/fd/source.h
 src/dzip/dzip.util.o: src/convert/join.h
 src/dzip/dzip.util.o: src/convert/sink.h
 src/dzip/dzip.util.o: src/convert/source.h
-src/dzip/dzip.util.o: src/convert/status.h
+src/dzip/dzip.util.o: src/convert/type.h
 src/dzip/dzip.util.o: src/dzip/inflate.h
 src/dzip/dzip.util.o: src/dzip/sink.h
 src/dzip/dzip.util.o: src/dzip/source.h
@@ -20,7 +20,7 @@ src/dzip/dzip.util.o: src/range/def.h
 src/dzip/dzip.util.o: src/window/alloc.h
 src/dzip/dzip.util.o: src/window/def.h
 src/dzip/inflate.o: src/convert/source.h
-src/dzip/inflate.o: src/convert/status.h
+src/dzip/inflate.o: src/convert/type.h
 src/dzip/inflate.o: src/dzip/common.h
 src/dzip/inflate.o: src/dzip/inflate.h
 src/dzip/inflate.o: src/log/log.h
@@ -31,14 +31,14 @@ src/dzip/inflate.o: src/window/alloc.h
 src/dzip/inflate.o: src/window/def.h
 src/dzip/sink.o: src/convert/sink.h
 src/dzip/sink.o: src/convert/source.h
-src/dzip/sink.o: src/convert/status.h
+src/dzip/sink.o: src/convert/type.h
 src/dzip/sink.o: src/dzip/deflate.h
 src/dzip/sink.o: src/log/log.h
 src/dzip/sink.o: src/range/def.h
 src/dzip/sink.o: src/window/alloc.h
 src/dzip/sink.o: src/window/def.h
 src/dzip/source.o: src/convert/source.h
-src/dzip/source.o: src/convert/status.h
+src/dzip/source.o: src/convert/type.h
 src/dzip/source.o: src/dzip/inflate.h
 src/dzip/source.o: src/dzip/source.h
 src/dzip/source.o: src/log/log.h
@@ -48,7 +48,7 @@ src/dzip/test/dzip-benchmark.test.o: src/convert/fd/sink.h
 src/dzip/test/dzip-benchmark.test.o: src/convert/fd/source.h
 src/dzip/test/dzip-benchmark.test.o: src/convert/sink.h
 src/dzip/test/dzip-benchmark.test.o: src/convert/source.h
-src/dzip/test/dzip-benchmark.test.o: src/convert/status.h
+src/dzip/test/dzip-benchmark.test.o: src/convert/type.h
 src/dzip/test/dzip-benchmark.test.o: src/dzip/deflate.h
 src/dzip/test/dzip-benchmark.test.o: src/log/log.h
 src/dzip/test/dzip-benchmark.test.o: src/range/def.h
